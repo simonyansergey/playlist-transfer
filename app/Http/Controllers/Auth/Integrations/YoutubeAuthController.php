@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\Auth\Integrations;
 
-use Illuminate\Http\Request;
 use Laravel\Socialite\Socialite;
 use App\Http\Controllers\Controller;
 use App\Models\OauthAccount;
 use App\Models\User;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class YoutubeAuthController extends Controller
 {
     /**
-     * @return RedirectResponse
+     * @return Response
      */
     public function redirect(): Response
     {
@@ -27,6 +25,9 @@ class YoutubeAuthController extends Controller
         );
     }
 
+    /**
+     * @return Response
+     */
     public function callback(): Response
     {
         try {
