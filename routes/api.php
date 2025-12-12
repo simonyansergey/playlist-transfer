@@ -15,13 +15,13 @@ Route::prefix('/v1')
             ->prefix('/youtube')
             ->group(static function (): void {
                 Route::get('/redirect', 'redirect');
-                Route::post('/callback', 'callback');
+                Route::get('/callback', 'callback');
             });
 
         Route::controller(SpotifyAuthController::class)
             ->prefix('/spotify')
             ->group(static function (): void {
                 Route::get('/redirect', 'redirect');
-                Route::post('/callback', 'callback');
+                Route::get('/callback', 'callback');
             });
     });
