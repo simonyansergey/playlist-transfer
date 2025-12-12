@@ -9,18 +9,19 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::controller(YoutubeAuthController::class)
-    ->prefix('/youtube')
-    ->middleware(['auth:sanctum'])
+Route::prefix('/v1')
     ->group(static function (): void {
-        Route::get('/redirect', 'redirect');
-        Route::post('/callback', 'callback');
-    });
+        Route::controller(YoutubeAuthController::class)
+            ->prefix('/youtube')
+            ->group(static function (): void {
+                Route::get('/redirect', 'redirect');
+                Route::post('/callback', 'callback');
+            });
 
-Route::controller(SpotifyAuthController::class)
-    ->prefix('/spotify')
-    ->middleware(['auth:sanctum'])
-    ->group(static function (): void {
-        Route::get('/redirect', 'redirect');
-        Route::post('/callback', 'callback');
+        Route::controller(SpotifyAuthController::class)
+            ->prefix('/spotify')
+            ->group(static function (): void {
+                Route::get('/redirect', 'redirect');
+                Route::post('/callback', 'callback');
+            });
     });
