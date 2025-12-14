@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\OauthAccount;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\Integrations\SpotifyAuthController;
 use App\Http\Controllers\Auth\Integrations\YoutubeAuthController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();

@@ -60,7 +60,7 @@ class SpotifyAuthController extends Controller
             logger()->info($e->getMessage());
 
             return response()->json(
-                data: [],
+                data: ['message' => 'Something went wrong! Please try again later'],
                 status: Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }

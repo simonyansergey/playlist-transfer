@@ -18,6 +18,13 @@ class YoutubeAuthController extends Controller
         // TODO add scopes if needed
         return response()->json(
             ['url' => Socialite::driver('google')
+                ->scopes([
+                    'https://www.googleapis.com/auth/youtube.readonly'
+                ])
+                ->with([
+                    'access_type' => 'offline',
+                    'prompt' => 'consent'
+                ])
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl()],
