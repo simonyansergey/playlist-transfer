@@ -15,7 +15,6 @@ class YoutubeAuthController extends Controller
      */
     public function redirect(): Response
     {
-        // TODO add scopes if needed
         return response()->json(
             ['url' => Socialite::driver('google')
                 ->scopes([

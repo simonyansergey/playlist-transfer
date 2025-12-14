@@ -65,8 +65,5 @@ class SpotifyOauthService
      * @param OauthAccount $oauthAccount
      * @return void
      */
-    public function invalidateIntegration(OauthAccount $oauthAccount): void
-    {
-
-    }
+    public function invalidateIntegration(OauthAccount $oauthAccount): void {}
 }
