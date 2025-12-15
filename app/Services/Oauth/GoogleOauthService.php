@@ -55,7 +55,7 @@ class GoogleOauthService
 
         $oauthAccount->update([
             'access_token' => $data['access_token'],
-            'expires_at' => now()->addSecond($data['expires_in'])
+            'expires_at' => now()->addSeconds($data['expires_in'])
         ]);
 
         return $oauthAccount;

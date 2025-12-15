@@ -4,9 +4,14 @@ namespace App\Services\Youtube;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use App\Services\Oauth\GoogleOauthService;
 
 class YoutubeApiService
 {
+    public function __construct(
+        private readonly GoogleOauthService $googleOauthService
+    ) {}
+
     /**
      * @param User $user
      * @param string $playlistUrl

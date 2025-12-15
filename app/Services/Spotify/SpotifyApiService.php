@@ -2,13 +2,11 @@
 
 namespace App\Services\Spotify;
 
+use App\Services\Oauth\SpotifyOauthService;
+
 class SpotifyApiService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        private readonly SpotifyOauthService $spotifyOauthService
+    ) {}
 }
