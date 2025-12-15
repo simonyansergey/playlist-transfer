@@ -15,9 +15,12 @@ class SpotifyAuthController extends Controller
      */
     public function redirect(): Response
     {
-        // TODO add scopes if needed
         return response()->json(
             ['url' => Socialite::driver('spotify')
+                ->scopes([
+                    'playlist-modify-private',
+                    'playlist-modify-public'
+                ])
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl()],

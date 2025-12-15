@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Transfers\PlaylistTransferController;
@@ -30,37 +31,42 @@ Route::prefix('/v1')
                 Route::post('/youtube-to-spotify', 'store');
             });
 
-        // Route::get('/{user}/{playlistId}/test', function (User $user, string $playlistId) {
+        // Route::post('/{user}/{playlistId}/test', function (User $user, string $playlistId) {
         //     $accessToken = $user->oauthAccounts()
-        //         ->where('provider', 'google')
-        //         ->first()
-        //         ->access_token;
+        //         ->where('provider', 'spotify')
+        //         ->value('access_token');
 
         //     $response = Http::withToken($accessToken)
-        //         ->get(config('youtube.api_base') . '/playlists' . '?' . http_build_query([
-        //             'id' => $playlistId,
-        //             'part' => 'id,contentDetails,localizations,player,snippet,status'
-        //         ]));
-        //     dd($response->json('items'));
+        //         ->post(config('spotify.api_base') . '/playlists/' . $playlistId . '/tracks', [
+        //             'uris' => ['spotify:track:4nClbtvjF76kDFFecauY1J']
+        //         ]);
+
+        //     $data = $response->json();
+
+        //     dd($data['snapshot_id']);
+
+        //     return response()->json(
+        //         ['id' => $data['tracks']['items'][0]['album']['id']]
+        //     );
         // });
 
         // Route::post('/{oauthAccount}/extend', function (OauthAccount $oauthAccount) {
-        //     $response = Http::asForm()->post(config('youtube.token_url'), [
-        //         'client_id' => config('services.google.client_id'),
-        //         'client_secret' => config('services.google.client_secret'),
+        //     $response = Http::asForm()->post(config('spotify.token_url'), [
+        //         'client_id' => config('services.spotify.client_id'),
+        //         'client_secret' => config('services.spotify.client_secret'),
         //         'refresh_token' => $oauthAccount->refresh_token,
         //         'grant_type' => 'refresh_token'
         //     ]);
 
         //     if ($response->failed()) {
-
+        //         throw new Exception('Failed to refresh access token');
         //     }
 
         //     $data = $response->json();
 
         //     $oauthAccount->update([
         //         'access_token' => $data['access_token'],
-        //         'expires_at' => now()->addSecond($data['expires_in'])
+        //         'expires_at' => now()->addSeconds($data['expires_in'])
         //     ]);
         // });
     });
