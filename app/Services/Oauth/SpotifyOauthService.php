@@ -5,6 +5,7 @@ namespace App\Services\Oauth;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\OauthAccount;
+use Exception;
 use Illuminate\Support\Facades\Http;
 
 class SpotifyOauthService
@@ -18,10 +19,9 @@ class SpotifyOauthService
         $oauthAccount = $user->oauthAccounts()->first();
 
         if ($this->isExpired($oauthAccount)) {
-
+            $oauthAccount = $this->refreshAccessToken($oauthAccount);
         }
 
-        $oauthAccount = $this->refreshAccessToken($oauthAccount);
         return $oauthAccount->access_token;
     }
 
@@ -48,7 +48,7 @@ class SpotifyOauthService
         ]);
 
         if ($response->failed()) {
-
+            throw new Exception('Failed to refresh access token');
         }
 
         $data = $response->json();
