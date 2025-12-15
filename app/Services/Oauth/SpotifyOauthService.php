@@ -10,13 +10,15 @@ use Illuminate\Support\Facades\Http;
 
 class SpotifyOauthService
 {
-        /**
+    /**
      * @param User $user
      * @return string
      */
     public function getValidAccessToken(User $user): string
     {
-        $oauthAccount = $user->oauthAccounts()->first();
+        $oauthAccount = $user->oauthAccounts()
+            ->where('provider', 'spotify')
+            ->first();
 
         if ($this->isExpired($oauthAccount)) {
             $oauthAccount = $this->refreshAccessToken($oauthAccount);
