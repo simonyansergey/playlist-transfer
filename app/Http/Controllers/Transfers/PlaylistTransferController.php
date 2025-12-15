@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Transfers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transfers\TransferStoreRequest;
 use App\Services\PlaylistTransfer\PlaylistTransferService;

@@ -18,13 +18,13 @@ class PlaylistTransferItem extends Model
         'search_query',
         'matched_uri',
         'status',
-        'error_message'
+        'error_message',
     ];
 
     protected function casts(): array
     {
         return [
-            'raw_data' => 'array'
+            'raw_data' => 'array',
         ];
     }
 

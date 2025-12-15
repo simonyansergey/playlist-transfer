@@ -13,21 +13,11 @@ class PlaylistTransferService
         private readonly SpotifyApiService $spotifyApiService
     ) {}
 
-    /**
-     * @param User $user
-     * @param string $playlistUrl
-     * @param array $options
-     * @return int
-     */
     public function startTransfer(User $user, string $playlistUrl, array $options): int
     {
         return 0;
     }
 
-    /**
-     * @param int $transferId
-     * @return array
-     */
     public function executeTransfer(int $transferId): array
     {
         return [];

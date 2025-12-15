@@ -3,8 +3,8 @@
 namespace App\Services\Youtube;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
 use App\Services\Oauth\GoogleOauthService;
+use Illuminate\Support\Facades\Http;
 
 class YoutubeApiService
 {
@@ -12,20 +12,15 @@ class YoutubeApiService
         private readonly GoogleOauthService $googleOauthService
     ) {}
 
-    /**
-     * @param User $user
-     * @param string $playlistUrl
-     * @return array
-     */
     public function getPlaylist(User $user, string $playlistUrl): array
     {
         $accessToken = $this->googleOauthService->getValidAccessToken($user);
         $playlistId = $this->getPlaylistId($playlistUrl);
 
         $response = Http::withToken($accessToken)
-            ->get(config('youtube.api_base') . '/playlists' . '?' . http_build_query([
+            ->get(config('youtube.api_base').'/playlists'.'?'.http_build_query([
                 'id' => $playlistId,
-                'part' => 'id,contentDetails,localizations,player,snippet,status'
+                'part' => 'id,contentDetails,localizations,player,snippet,status',
             ]));
 
         $result = $response->json('items');
@@ -33,31 +28,26 @@ class YoutubeApiService
         return [
             'title' => $result['snippet']['title'],
             'channel_id' => $result['snippet']['channelId'],
-            'total_items_count' => $result['contentDetails']['itemCount']
+            'total_items_count' => $result['contentDetails']['itemCount'],
         ];
     }
 
-    /**
-     * @param User $user
-     * @param string $playlistUrl
-     * @return array
-     */
     public function getPlaylistItems(User $user, string $playlistUrl): array
     {
         $accessToken = $this->googleOauthService->getValidAccessToken($user);
         $playlistId = $this->getPlaylistId($playlistUrl);
 
         $response = Http::withToken($accessToken)
-            ->get(config('youtube.api_base') . '/playlistItems' . '?' . http_build_query([
+            ->get(config('youtube.api_base').'/playlistItems'.'?'.http_build_query([
                 'playlistId' => $playlistId,
-                'part' => 'id,contentDetails,snippet,status'
+                'part' => 'id,contentDetails,snippet,status',
             ]));
 
         $result = $response->json();
 
         $data = [
             'nextPageToken' => $result['nextPageToken'] ?? null,
-            "prevPageToken" => $result['prevPageToken'] ?? null,
+            'prevPageToken' => $result['prevPageToken'] ?? null,
         ];
 
         // TODO handle pagination
@@ -65,13 +55,10 @@ class YoutubeApiService
         return [];
     }
 
-    /**
-     * @param string $url
-     * @return string
-     */
     private function getPlaylistId(string $url): string
     {
         parse_str(parse_url($url, PHP_URL_QUERY), $result);
+
         return $result['list'];
     }
 }

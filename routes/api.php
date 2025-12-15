@@ -1,13 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Transfers\PlaylistTransferController;
 use App\Http\Controllers\Auth\Integrations\SpotifyAuthController;
 use App\Http\Controllers\Auth\Integrations\YoutubeAuthController;
+use App\Http\Controllers\Transfers\PlaylistTransferController;
 use App\Models\OauthAccount;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('/v1')
     ->group(static function (): void {

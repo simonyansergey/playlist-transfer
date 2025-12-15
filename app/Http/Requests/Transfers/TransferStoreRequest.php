@@ -16,7 +16,7 @@ class TransferStoreRequest extends FormRequest
         return [
             'playlist_url' => ['required', 'url'],
             'playlist_name' => ['nullable', 'string'],
-            'public' => ['nullable']
+            'public' => ['nullable'],
         ];
     }
 }

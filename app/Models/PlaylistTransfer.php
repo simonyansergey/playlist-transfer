@@ -23,7 +23,7 @@ class PlaylistTransfer extends Model
         'failed_items',
         'error_message',
         'started_at',
-        'finished_at'
+        'finished_at',
     ];
 
     public function user(): BelongsTo
