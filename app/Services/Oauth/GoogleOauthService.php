@@ -18,10 +18,9 @@ class GoogleOauthService
         $oauthAccount = $user->oauthAccounts()->first();
 
         if ($this->isExpired($oauthAccount)) {
-
+            $oauthAccount = $this->refreshAccessToken($oauthAccount);
         }
 
-        $oauthAccount = $this->refreshAccessToken($oauthAccount);
         return $oauthAccount->access_token;
     }
 

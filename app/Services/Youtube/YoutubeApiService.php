@@ -19,11 +19,7 @@ class YoutubeApiService
      */
     public function getPlaylist(User $user, string $playlistUrl): array
     {
-        $accessToken = $user->oauthAccounts()
-            ->where('provider', 'google')
-            ->first()
-            ->access_token;
-
+        $accessToken = $this->googleOauthService->getValidAccessToken($user);
         $playlistId = $this->getPlaylistId($playlistUrl);
 
         $response = Http::withToken($accessToken)
@@ -48,11 +44,7 @@ class YoutubeApiService
      */
     public function getPlaylistItems(User $user, string $playlistUrl): array
     {
-        $accessToken = $user->oauthAccounts()
-            ->where('provider', 'google')
-            ->first()
-            ->access_token;
-
+        $accessToken = $this->googleOauthService->getValidAccessToken($user);
         $playlistId = $this->getPlaylistId($playlistUrl);
 
         $response = Http::withToken($accessToken)
