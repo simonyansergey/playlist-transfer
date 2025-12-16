@@ -26,7 +26,10 @@ class PlaylistTransferService
      */
     public function startTransfer(User $user, string $playlistUrl, array $options): int
     {
-        $playlistDetails = $this->youtubeApiService->getPlaylist($user, $playlistUrl);
+        $playlistDetails = $this->youtubeApiService->getPlaylist(
+            user: $user,
+            playlistUrl: $playlistUrl
+        );
 
         $transfer = PlaylistTransfer::create([
             'user_id' => $user->id,
@@ -61,8 +64,8 @@ class PlaylistTransferService
             ]);
 
             $playlistItems = $this->youtubeApiService->getPlaylistItems(
-                $user,
-                "https://www.youtube.com/playlist?list=" . $transfer->source_playlist_id
+                user: $user,
+                playlistUrl: "https://www.youtube.com/playlist?list=" . $transfer->source_playlist_id
             );
 
             $playlistName = $transfer->target_playlist_name
@@ -70,9 +73,9 @@ class PlaylistTransferService
                 ?? 'Transferred Playlist';
 
             $spotifyPlaylistId = $this->spotifyApiService->createPlaylist(
-                $user,
-                $playlistName,
-                true
+                user: $user,
+                name: $playlistName,
+                public: true
             );
 
             $transfer->update(['target_playlist_id' => $spotifyPlaylistId]);
@@ -88,7 +91,10 @@ class PlaylistTransferService
                 $searchQuery = "track:{$sourceTitle}";
 
                 try {
-                    $spotifyTrackUri = $this->spotifyApiService->searchTrack($user, $searchQuery);
+                    $spotifyTrackUri = $this->spotifyApiService->searchTrack(
+                        user: $user,
+                        searchQuery: $searchQuery
+                    );
 
                     if ($spotifyTrackUri) {
                         $matchedTracks[] = $spotifyTrackUri;
@@ -132,7 +138,11 @@ class PlaylistTransferService
             }
 
             if (!empty($matchedTracks)) {
-                $this->spotifyApiService->addTracks($user, $spotifyPlaylistId, $matchedTracks);
+                $this->spotifyApiService->addTracks(
+                    user: $user,
+                    playlistId: $spotifyPlaylistId,
+                    trackList: $matchedTracks
+                );
             }
 
             $transfer->update([
