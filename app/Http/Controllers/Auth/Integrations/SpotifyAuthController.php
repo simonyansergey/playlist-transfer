@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Auth\Integrations;
 
-use App\Http\Controllers\Controller;
-use App\Models\OauthAccount;
 use App\Models\User;
+use App\Models\OauthAccount;
+use Illuminate\Http\Request;
 use Laravel\Socialite\Socialite;
+use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class SpotifyAuthController extends Controller
@@ -27,19 +28,13 @@ class SpotifyAuthController extends Controller
         );
     }
 
-    public function callback(): Response
+    public function callback(Request $request): Response
     {
         try {
+            $user = $request->user('sanctum');
             $socialiteUser = Socialite::driver('spotify')
                 ->stateless()
                 ->user();
-
-            $user = User::updateOrCreate([
-                'email' => $socialiteUser->email,
-            ], [
-                'name' => $socialiteUser->name,
-                'email_verified_at' => now(),
-            ]);
 
             OauthAccount::updateOrCreate([
                 'provider_user_id' => $socialiteUser->id,
@@ -52,7 +47,7 @@ class SpotifyAuthController extends Controller
             ]);
 
             return response()->json(
-                data: ['token' => $user->createToken('spotify-auth-token')->plainTextToken],
+                data: ['message' => 'Spotify account linked successfully!'],
                 status: Response::HTTP_OK
             );
         } catch (\Exception $e) {

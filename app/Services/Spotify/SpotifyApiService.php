@@ -59,7 +59,8 @@ class SpotifyApiService
     public function addTracks(User $user, string $playlistId, array $trackList): string
     {
         $token = $this->spotifyOauthService->getValidAccessToken($user);
-        $response = Http::withToken($token)
+        $response = Http::timeout(100)
+            ->withToken($token)
             ->post(config('spotify.api_base') . '/playlists/' . $playlistId . '/tracks', [
                 'uris' => $trackList,
             ]);

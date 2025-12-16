@@ -39,18 +39,32 @@ class YoutubeApiService
         $accessToken = $this->googleOauthService->getValidAccessToken($user);
         $playlistId = $this->getPlaylistId($playlistUrl);
 
-        $response = Http::withToken($accessToken)
-            ->get(config('youtube.api_base') . '/playlistItems' . '?' . http_build_query([
+        $allItems = [];
+        $pageToken = null;
+
+        do {
+            $params = [
                 'playlistId' => $playlistId,
                 'part' => 'id,contentDetails,snippet,status',
                 'maxResults' => 50,
-            ]));
+            ];
 
-        $result = $response->json();
+            if ($pageToken) {
+                $params['pageToken'] = $pageToken;
+            }
 
-        // TODO: handle pagination
+            $response = Http::withToken($accessToken)
+                ->get(config('youtube.api_base') . '/playlistItems' . '?' . http_build_query($params));
 
-        return $result['items'] ?? [];
+            $result = $response->json();
+
+            $items = $result['items'] ?? [];
+            $allItems = array_merge($allItems, $items);
+
+            $pageToken = $result['nextPageToken'] ?? null;
+        } while ($pageToken);
+
+        return $allItems;
     }
 
     private function getPlaylistId(string $url): string

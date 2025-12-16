@@ -19,7 +19,7 @@ class PlaylistTransferController extends Controller
     public function store(TransferStoreRequest $request)
     {
         $data = $request->validated();
-        $user = $request->user();
+        $user = $request->user('sanctum');
 
         // Start the transfer
         $transferId = $this->playlistTransferService->startTransfer(

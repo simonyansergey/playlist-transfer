@@ -19,6 +19,7 @@ Route::prefix('/v1')
 
         Route::controller(SpotifyAuthController::class)
             ->prefix('/spotify')
+            ->middleware(['auth:sanctum'])
             ->group(static function (): void {
                 Route::get('/redirect', 'redirect');
                 Route::get('/callback', 'callback');
@@ -26,6 +27,7 @@ Route::prefix('/v1')
 
         Route::controller(PlaylistTransferController::class)
             ->prefix('/transfers')
+            ->middleware(['auth:sanctum'])
             ->group(static function (): void {
                 Route::post('/youtube-to-spotify', 'store');
                 Route::get('/{transferId}', 'show');
