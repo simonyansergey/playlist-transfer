@@ -10,7 +10,8 @@ class YoutubeApiService
 {
     public function __construct(
         private readonly GoogleOauthService $googleOauthService
-    ) {}
+    ) {
+    }
 
     public function getPlaylist(User $user, string $playlistUrl): array
     {
@@ -18,17 +19,18 @@ class YoutubeApiService
         $playlistId = $this->getPlaylistId($playlistUrl);
 
         $response = Http::withToken($accessToken)
-            ->get(config('youtube.api_base').'/playlists'.'?'.http_build_query([
+            ->get(config('youtube.api_base') . '/playlists' . '?' . http_build_query([
                 'id' => $playlistId,
                 'part' => 'id,contentDetails,localizations,player,snippet,status',
             ]));
 
-        $result = $response->json('items');
+        $items = $response->json('items');
+        $result = $items[0] ?? [];
 
         return [
-            'title' => $result['snippet']['title'],
-            'channel_id' => $result['snippet']['channelId'],
-            'total_items_count' => $result['contentDetails']['itemCount'],
+            'title' => $result['snippet']['title'] ?? '',
+            'channel_id' => $result['snippet']['channelId'] ?? '',
+            'total_items_count' => $result['contentDetails']['itemCount'] ?? 0,
         ];
     }
 
@@ -38,21 +40,17 @@ class YoutubeApiService
         $playlistId = $this->getPlaylistId($playlistUrl);
 
         $response = Http::withToken($accessToken)
-            ->get(config('youtube.api_base').'/playlistItems'.'?'.http_build_query([
+            ->get(config('youtube.api_base') . '/playlistItems' . '?' . http_build_query([
                 'playlistId' => $playlistId,
                 'part' => 'id,contentDetails,snippet,status',
+                'maxResults' => 50,
             ]));
 
         $result = $response->json();
 
-        $data = [
-            'nextPageToken' => $result['nextPageToken'] ?? null,
-            'prevPageToken' => $result['prevPageToken'] ?? null,
-        ];
+        // TODO: handle pagination
 
-        // TODO handle pagination
-
-        return [];
+        return $result['items'] ?? [];
     }
 
     private function getPlaylistId(string $url): string

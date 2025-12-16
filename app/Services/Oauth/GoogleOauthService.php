@@ -6,6 +6,7 @@ use App\Models\OauthAccount;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Exception;
 
 class GoogleOauthService
 {
@@ -35,7 +36,7 @@ class GoogleOauthService
         ]);
 
         if ($response->failed()) {
-
+            throw new Exception('Response failed with the following error message');
         }
 
         $data = $response->json();

@@ -28,27 +28,29 @@ Route::prefix('/v1')
             ->prefix('/transfers')
             ->group(static function (): void {
                 Route::post('/youtube-to-spotify', 'store');
+                Route::get('/{transferId}', 'show');
+                Route::post('/{transferId}/execute', 'execute');
             });
 
         // Route::post('/{user}/{playlistId}/test', function (User $user, string $playlistId) {
         //     $accessToken = $user->oauthAccounts()
         //         ->where('provider', 'spotify')
         //         ->value('access_token');
-
+    
         //     $response = Http::withToken($accessToken)
         //         ->post(config('spotify.api_base') . '/playlists/' . $playlistId . '/tracks', [
         //             'uris' => ['spotify:track:4nClbtvjF76kDFFecauY1J']
         //         ]);
-
+    
         //     $data = $response->json();
-
+    
         //     dd($data['snapshot_id']);
-
+    
         //     return response()->json(
         //         ['id' => $data['tracks']['items'][0]['album']['id']]
         //     );
         // });
-
+    
         // Route::post('/{oauthAccount}/extend', function (OauthAccount $oauthAccount) {
         //     $response = Http::asForm()->post(config('spotify.token_url'), [
         //         'client_id' => config('services.spotify.client_id'),
@@ -56,13 +58,13 @@ Route::prefix('/v1')
         //         'refresh_token' => $oauthAccount->refresh_token,
         //         'grant_type' => 'refresh_token'
         //     ]);
-
+    
         //     if ($response->failed()) {
         //         throw new Exception('Failed to refresh access token');
         //     }
-
+    
         //     $data = $response->json();
-
+    
         //     $oauthAccount->update([
         //         'access_token' => $data['access_token'],
         //         'expires_at' => now()->addSeconds($data['expires_in'])

@@ -10,7 +10,8 @@ class SpotifyApiService
 {
     public function __construct(
         private readonly SpotifyOauthService $spotifyOauthService
-    ) {}
+    ) {
+    }
 
     /**
      * Get current spotify user id
@@ -23,7 +24,7 @@ class SpotifyApiService
     public function createPlaylist(User $user, string $name, bool $public = true): string
     {
         $token = $this->spotifyOauthService->getValidAccessToken($user);
-        $url = config('spotify.api_base').'/users/'.$this->getCurrentUserId($user).'/playlists';
+        $url = config('spotify.api_base') . '/users/' . $this->getCurrentUserId($user) . '/playlists';
 
         $response = Http::withToken($token)
             ->post($url, [
@@ -38,27 +39,28 @@ class SpotifyApiService
     }
 
     /**
-     * Get best matching track or null
+     * Get best matching track URI or null
      */
     public function searchTrack(User $user, string $searchQuery): ?string
     {
         $accessToken = $this->spotifyOauthService->getValidAccessToken($user);
         $response = Http::withToken($accessToken)
-            ->get(config('spotify.api_base').'/search'.'?'.http_build_query([
+            ->get(config('spotify.api_base') . '/search' . '?' . http_build_query([
                 'q' => $searchQuery,
                 'type' => 'track',
+                'limit' => 1,
             ]));
 
         $data = $response->json();
 
-        return $data['tracks']['items'][0]['album']['id'] ?? null;
+        return $data['tracks']['items'][0]['uri'] ?? null;
     }
 
     public function addTracks(User $user, string $playlistId, array $trackList): string
     {
         $token = $this->spotifyOauthService->getValidAccessToken($user);
         $response = Http::withToken($token)
-            ->post(config('spotify.api_base').'/playlists/'.$playlistId.'/tracks', [
+            ->post(config('spotify.api_base') . '/playlists/' . $playlistId . '/tracks', [
                 'uris' => $trackList,
             ]);
 
