@@ -26,16 +26,14 @@ class PlaylistTransferService
      */
     public function startTransfer(User $user, string $playlistUrl, array $options): int
     {
-        // Get YouTube playlist details
         $playlistDetails = $this->youtubeApiService->getPlaylist($user, $playlistUrl);
 
-        // Create playlist transfer record
         $transfer = PlaylistTransfer::create([
             'user_id' => $user->id,
             'source_provider' => 'youtube',
             'source_playlist_id' => $this->extractPlaylistId($playlistUrl),
             'target_provider' => 'spotify',
-            'target_playlist_id' => '', // Will be set during execution
+            'target_playlist_id' => $playlistDetails['title'],
             'status' => 'pending',
             'total_items' => $playlistDetails['total_items_count'] ?? 0,
             'matched_items' => 0,
@@ -57,19 +55,16 @@ class PlaylistTransferService
         $user = $transfer->user;
 
         try {
-            // Update status to processing
             $transfer->update([
                 'status' => 'processing',
                 'started_at' => now(),
             ]);
 
-            // Get YouTube playlist items
             $playlistItems = $this->youtubeApiService->getPlaylistItems(
                 $user,
                 "https://www.youtube.com/playlist?list=" . $transfer->source_playlist_id
             );
 
-            // Create Spotify playlist
             $playlistName = $transfer->target_playlist_name
                 ?? $playlistItems['title']
                 ?? 'Transferred Playlist';
@@ -86,23 +81,19 @@ class PlaylistTransferService
             $matchedCount = 0;
             $failedCount = 0;
 
-            // Process each YouTube video/track
             foreach ($playlistItems as $item) {
                 $sourceTitle = $item['snippet']['title'] ?? '';
                 $sourceVideoId = $item['snippet']['resourceId']['videoId'] ?? '';
 
-                // Create search query
                 $searchQuery = "track:{$sourceTitle}";
 
                 try {
-                    // Search for track on Spotify
                     $spotifyTrackUri = $this->spotifyApiService->searchTrack($user, $searchQuery);
 
                     if ($spotifyTrackUri) {
                         $matchedTracks[] = $spotifyTrackUri;
                         $matchedCount++;
 
-                        // Create transfer item record
                         PlaylistTransferItem::create([
                             'playlist_transfer_id' => $transfer->id,
                             'source_title' => $sourceTitle,
@@ -140,12 +131,10 @@ class PlaylistTransferService
                 }
             }
 
-            // Add matched tracks to Spotify playlist
             if (!empty($matchedTracks)) {
                 $this->spotifyApiService->addTracks($user, $spotifyPlaylistId, $matchedTracks);
             }
 
-            // Update transfer status
             $transfer->update([
                 'status' => 'completed',
                 'matched_items' => $matchedCount,
@@ -162,7 +151,6 @@ class PlaylistTransferService
             ];
 
         } catch (\Exception $e) {
-            // Update transfer status to failed
             $transfer->update([
                 'status' => 'failed',
                 'error_message' => $e->getMessage(),
