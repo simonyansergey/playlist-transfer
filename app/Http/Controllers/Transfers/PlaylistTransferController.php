@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Transfers\TransferStoreRequest;
 use App\Models\PlaylistTransfer;
 use App\Services\PlaylistTransfer\PlaylistTransferService;
+use Illuminate\Http\Request;
 
 class PlaylistTransferController extends Controller
 {
@@ -42,11 +43,12 @@ class PlaylistTransferController extends Controller
     /**
      * Get transfer details
      */
-    public function show(int $transferId)
+    public function show(Request $request, PlaylistTransfer $transfer)
     {
-        $user = request()->user();
+        $this->authorize('view', $transfer);
 
-        $transfer = $this->playlistTransferService->getTransfer($user, $transferId);
+        $user = $request->user('sanctum');
+        $transfer = $this->playlistTransferService->getTransfer($user, $transfer->id);
 
         return response()->json([
             'success' => true,
