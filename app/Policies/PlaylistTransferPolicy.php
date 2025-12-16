@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Policies\Models\PlaylistTransfer;
+
+namespace App\Policies;
 
 use App\Models\PlaylistTransfer;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class PlaylistTransferPolicy
 {
