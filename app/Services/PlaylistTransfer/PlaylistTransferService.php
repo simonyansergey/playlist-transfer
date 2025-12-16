@@ -92,7 +92,7 @@ class PlaylistTransferService
                 $sourceVideoId = $item['snippet']['resourceId']['videoId'] ?? '';
 
                 // Create search query
-                $searchQuery = $sourceTitle;
+                $searchQuery = "track:{$sourceTitle}";
 
                 try {
                     // Search for track on Spotify
