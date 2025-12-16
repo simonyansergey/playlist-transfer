@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Transfers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transfers\TransferStoreRequest;
+use App\Models\PlaylistTransfer;
 use App\Services\PlaylistTransfer\PlaylistTransferService;
 
 class PlaylistTransferController extends Controller
@@ -56,9 +57,10 @@ class PlaylistTransferController extends Controller
     /**
      * Execute a playlist transfer
      */
-    public function execute(int $transferId)
+    public function execute(PlaylistTransfer $transfer)
     {
-        $result = $this->playlistTransferService->executeTransfer($transferId);
+        $this->authorize('execute', $transfer);
+        $result = $this->playlistTransferService->executeTransfer($transfer->id);
 
         if ($result['success']) {
             return response()->json([

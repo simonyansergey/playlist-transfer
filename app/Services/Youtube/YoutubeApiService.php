@@ -71,6 +71,10 @@ class YoutubeApiService
     {
         parse_str(parse_url($url, PHP_URL_QUERY), $result);
 
+        if (!isset($result['list'])) {
+            throw new \InvalidArgumentException('Invalid YouTube playlist URL');
+        }
+
         return $result['list'];
     }
 }

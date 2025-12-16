@@ -4,6 +4,7 @@ namespace App\Services\Spotify;
 
 use App\Models\User;
 use App\Services\Oauth\SpotifyOauthService;
+use Exception;
 use Illuminate\Support\Facades\Http;
 
 class SpotifyApiService
@@ -33,6 +34,10 @@ class SpotifyApiService
                 'description' => 'Created using Playlist transfer app. Enjoy!',
             ]);
 
+        if ($response->failed()) {
+            throw new Exception("Failed to create playlist");
+        }
+
         $data = $response->json();
 
         return $data['id'];
@@ -51,6 +56,10 @@ class SpotifyApiService
                 'limit' => 1,
             ]));
 
+        if ($response->failed()) {
+            throw new Exception("Failed to search track");
+        }
+
         $data = $response->json();
 
         return $data['tracks']['items'][0]['uri'] ?? null;
@@ -64,6 +73,10 @@ class SpotifyApiService
             ->post(config('spotify.api_base') . '/playlists/' . $playlistId . '/tracks', [
                 'uris' => $trackList,
             ]);
+
+        if ($response->failed()) {
+            throw new Exception("Failed to add track");
+        }
 
         $data = $response->json();
 

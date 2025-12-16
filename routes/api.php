@@ -30,8 +30,8 @@ Route::prefix('/v1')
             ->middleware(['auth:sanctum'])
             ->group(static function (): void {
                 Route::post('/youtube-to-spotify', 'store');
-                Route::get('/{transferId}', 'show');
-                Route::post('/{transferId}/execute', 'execute');
+                Route::get('/{transfer}', 'show');
+                Route::post('/{transfer}/execute', 'execute');
             });
 
         // Route::post('/{user}/{playlistId}/test', function (User $user, string $playlistId) {

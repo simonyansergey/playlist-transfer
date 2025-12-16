@@ -12,7 +12,9 @@ class GoogleOauthService
 {
     public function getValidAccessToken(User $user): string
     {
-        $oauthAccount = $user->oauthAccounts()->first();
+        $oauthAccount = $user->oauthAccounts()
+            ->where('provider', 'google')
+            ->first();
 
         if ($this->isExpired($oauthAccount)) {
             $oauthAccount = $this->refreshAccessToken($oauthAccount);
