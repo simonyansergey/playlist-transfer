@@ -5,6 +5,7 @@ namespace App\Services\PlaylistTransfer;
 use App\Models\User;
 use App\Models\PlaylistTransfer;
 use App\Models\PlaylistTransferItem;
+use App\Jobs\ProcessPlaylistTransfer;
 use App\Services\Spotify\SpotifyApiService;
 use App\Services\Youtube\YoutubeApiService;
 
@@ -138,18 +139,17 @@ class PlaylistTransferService
             }
 
             if (!empty($matchedTracks)) {
-                $this->spotifyApiService->addTracks(
-                    user: $user,
-                    playlistId: $spotifyPlaylistId,
-                    trackList: $matchedTracks
+                ProcessPlaylistTransfer::dispatch(
+                    $transfer->id,
+                    auth()->user()->id,
+                    $matchedTracks,
+                    $spotifyPlaylistId
                 );
             }
 
             $transfer->update([
-                'status' => 'completed',
                 'matched_items' => $matchedCount,
                 'failed_items' => $failedCount,
-                'finished_at' => now(),
             ]);
 
             return [
