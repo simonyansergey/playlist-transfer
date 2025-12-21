@@ -58,6 +58,10 @@ class YoutubeApiService
 
             $result = $response->json();
 
+            logger()->debug([
+                'result' => $result,
+            ]);
+
             $items = $result['items'] ?? [];
             $allItems = array_merge($allItems, $items);
 

@@ -58,13 +58,12 @@ class PlaylistTransferJobTest extends TestCase
 
         // Verify Job Dispatched
         Queue::assertPushed(ProcessPlaylistTransfer::class, function ($job) use ($transfer) {
-            return $job->transferId === $transfer->id &&
-                $job->spotifyPlaylistId === 'spotify_playlist_id';
+            return $job->transferId === $transfer->id;
         });
 
         // Verify Status is NOT completed yet
         $transfer->refresh();
         $this->assertNotEquals('completed', $transfer->status);
-        $this->assertEquals('processing', $transfer->status);
+        $this->assertEquals('pending', $transfer->status);
     }
 }

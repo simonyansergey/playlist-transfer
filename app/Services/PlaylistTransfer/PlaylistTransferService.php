@@ -56,110 +56,17 @@ class PlaylistTransferService
     public function executeTransfer(int $transferId): array
     {
         $transfer = PlaylistTransfer::findOrFail($transferId);
-        $user = $transfer->user;
 
         try {
-            $transfer->update([
-                'status' => 'processing',
-                'started_at' => now(),
-            ]);
-
-            $playlistItems = $this->youtubeApiService->getPlaylistItems(
-                user: $user,
-                playlistUrl: "https://www.youtube.com/playlist?list=" . $transfer->source_playlist_id
+            ProcessPlaylistTransfer::dispatch(
+                $transfer->id,
+                auth()->user()->id
             );
-
-            $playlistName = $transfer->target_playlist_name
-                ?? $playlistItems['title']
-                ?? 'Transferred Playlist';
-
-            $spotifyPlaylistId = $this->spotifyApiService->createPlaylist(
-                user: $user,
-                name: $playlistName,
-                public: true
-            );
-
-            $transfer->update(['target_playlist_id' => $spotifyPlaylistId]);
-
-            $matchedTracks = [];
-            $matchedCount = 0;
-            $failedCount = 0;
-
-            foreach ($playlistItems as $item) {
-                $sourceTitle = $item['snippet']['title'] ?? '';
-                $sourceVideoId = $item['snippet']['resourceId']['videoId'] ?? '';
-
-                $searchQuery = "track:{$sourceTitle}";
-
-                try {
-                    $spotifyTrackUri = $this->spotifyApiService->searchTrack(
-                        user: $user,
-                        searchQuery: $searchQuery
-                    );
-
-                    if ($spotifyTrackUri) {
-                        $matchedTracks[] = $spotifyTrackUri;
-                        $matchedCount++;
-
-                        PlaylistTransferItem::create([
-                            'playlist_transfer_id' => $transfer->id,
-                            'source_title' => $sourceTitle,
-                            'source_video_id' => $sourceVideoId,
-                            'raw_data' => $item,
-                            'search_query' => $searchQuery,
-                            'matched_uri' => $spotifyTrackUri,
-                            'status' => 'matched',
-                        ]);
-                    } else {
-                        $failedCount++;
-
-                        PlaylistTransferItem::create([
-                            'playlist_transfer_id' => $transfer->id,
-                            'source_title' => $sourceTitle,
-                            'source_video_id' => $sourceVideoId,
-                            'raw_data' => $item,
-                            'search_query' => $searchQuery,
-                            'status' => 'failed',
-                            'error_message' => 'No matching track found on Spotify',
-                        ]);
-                    }
-                } catch (\Exception $e) {
-                    $failedCount++;
-
-                    PlaylistTransferItem::create([
-                        'playlist_transfer_id' => $transfer->id,
-                        'source_title' => $sourceTitle,
-                        'source_video_id' => $sourceVideoId,
-                        'raw_data' => $item,
-                        'search_query' => $searchQuery,
-                        'status' => 'failed',
-                        'error_message' => $e->getMessage(),
-                    ]);
-                }
-            }
-
-            if (!empty($matchedTracks)) {
-                ProcessPlaylistTransfer::dispatch(
-                    $transfer->id,
-                    auth()->user()->id,
-                    $matchedTracks,
-                    $spotifyPlaylistId
-                );
-            }
-
-            $transfer->update([
-                'matched_items' => $matchedCount,
-                'failed_items' => $failedCount,
-            ]);
 
             return [
                 'success' => true,
                 'transfer_id' => $transfer->id,
-                'matched_items' => $matchedCount,
-                'failed_items' => $failedCount,
-                'spotify_playlist_id' => $spotifyPlaylistId,
             ];
-
         } catch (\Exception $e) {
             $transfer->update([
                 'status' => 'failed',
