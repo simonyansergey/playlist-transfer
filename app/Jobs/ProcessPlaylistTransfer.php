@@ -40,9 +40,7 @@ class ProcessPlaylistTransfer implements ShouldQueue
             playlistUrl: "https://www.youtube.com/playlist?list=" . $transfer->source_playlist_id
         );
 
-        $playlistName = $transfer->target_playlist_name
-            ?? $playlistItems['title']
-            ?? 'Transferred Playlist';
+        $playlistName = $transfer->target_playlist_id ?? 'Transferred Playlist';
 
         $spotifyPlaylistId = $spotifyApiService->createPlaylist(
             user: $user,
