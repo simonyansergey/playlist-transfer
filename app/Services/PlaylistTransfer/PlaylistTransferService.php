@@ -8,6 +8,7 @@ use App\Models\PlaylistTransferItem;
 use App\Jobs\ProcessPlaylistTransfer;
 use App\Services\Spotify\SpotifyApiService;
 use App\Services\Youtube\YoutubeApiService;
+use App\Http\Resources\Models\PlaylistTransfer\PlaylistTransferShowResource;
 
 class PlaylistTransferService
 {
@@ -37,7 +38,7 @@ class PlaylistTransferService
             'source_provider' => 'youtube',
             'source_playlist_id' => $this->extractPlaylistId($playlistUrl),
             'target_provider' => 'spotify',
-            'target_playlist_id' => $playlistDetails['title'],
+            'target_playlist_id' => $options['playlist_name'] ?? $playlistDetails['title'],
             'status' => 'pending',
             'total_items' => $playlistDetails['total_items_count'] ?? 0,
             'matched_items' => 0,
@@ -86,39 +87,16 @@ class PlaylistTransferService
      * 
      * @param User $user The user requesting the transfer
      * @param int $transferId The transfer ID
-     * @return array Transfer details
+     * @return PlaylistTransferShowResource Transfer details
      */
-    public function getTransfer(User $user, int $transferId): array
+    public function getTransfer(User $user, int $transferId): PlaylistTransferShowResource
     {
         $transfer = PlaylistTransfer::where('user_id', $user->id)
             ->where('id', $transferId)
             ->with('playlistTransferItems')
             ->firstOrFail();
 
-        return [
-            'id' => $transfer->id,
-            'status' => $transfer->status,
-            'source_provider' => $transfer->source_provider,
-            'source_playlist_id' => $transfer->source_playlist_id,
-            'target_provider' => $transfer->target_provider,
-            'target_playlist_id' => $transfer->target_playlist_id,
-            'total_items' => $transfer->total_items,
-            'matched_items' => $transfer->matched_items,
-            'failed_items' => $transfer->failed_items,
-            'error_message' => $transfer->error_message,
-            'started_at' => $transfer->started_at,
-            'finished_at' => $transfer->finished_at,
-            'items' => $transfer->playlistTransferItems->map(function ($item) {
-                return [
-                    'source_title' => $item->source_title,
-                    'source_video_id' => $item->source_video_id,
-                    'search_query' => $item->search_query,
-                    'matched_uri' => $item->matched_uri,
-                    'status' => $item->status,
-                    'error_message' => $item->error_message,
-                ];
-            }),
-        ];
+        return new PlaylistTransferShowResource($transfer);
     }
 
     /**
